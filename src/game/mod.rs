@@ -1,4 +1,4 @@
-use colored::{Colorize, ColoredString};
+use colored::{ColoredString, Colorize};
 
 #[derive(Debug, PartialEq)]
 pub enum MoveError {
@@ -25,7 +25,7 @@ pub struct Game {
 }
 
 static COLUMN_COUNT: usize = 3;
-static WINNING_COMBOS: [[usize;3 ]; 8]  = [
+static WINNING_COMBOS: [[usize; 3]; 8] = [
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -44,7 +44,7 @@ impl Game {
         }
     }
 
-    pub fn board_to_colored_strings(&self) -> Vec<ColoredString>  {
+    pub fn board_to_colored_strings(&self) -> Vec<ColoredString> {
         let mut board_strings = Vec::new();
         let winning_combo = self.get_winning_combo();
         for (i, cell) in self.board.iter().enumerate() {
@@ -52,16 +52,14 @@ impl Game {
                 Some(Player::Player1) => {
                     if winning_combo.is_some() && winning_combo.unwrap().contains(&i) {
                         board_strings.push("X".red().on_white())
-                    }
-                    else {
+                    } else {
                         board_strings.push("X".red())
                     }
                 }
                 Some(Player::Player2) => {
                     if winning_combo.is_some() && winning_combo.unwrap().contains(&i) {
                         board_strings.push("O".blue().on_white())
-                    }
-                    else {
+                    } else {
                         board_strings.push("O".blue())
                     }
                 }
@@ -151,7 +149,7 @@ impl Game {
                         None => (),
                     }
                 }
-                 // check if the current combo has been matched (3 in a row)
+                // check if the current combo has been matched (3 in a row)
                 if player1_count == combo.len() {
                     return Some(Winner::Player(Player::Player1));
                 }
@@ -165,7 +163,7 @@ impl Game {
         if self.no_more_moves() {
             return Some(Winner::Tie);
         }
-        
+
         None
     }
 
@@ -186,16 +184,15 @@ impl Game {
         }
         Ok(())
     }
-
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::game::{Game, MoveError, Winner, Player};
+    use crate::game::{Game, MoveError, Player, Winner};
 
     #[test]
     fn test_game() {
-        let mut game = Game::new(); 
+        let mut game = Game::new();
         assert_eq!(game.has_ended(), false);
         assert_eq!(game.get_winner(), None);
 

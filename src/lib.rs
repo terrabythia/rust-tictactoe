@@ -1,5 +1,5 @@
-use std::{io, error::Error};
-use crate::game::{Winner, Game, MoveError};
+use crate::game::{Game, MoveError, Player, Winner};
+use std::{error::Error, io};
 
 pub mod game;
 
@@ -15,7 +15,7 @@ fn print_board(game: &Game) {
     }
 }
 
-pub fn play_game() -> Winner {
+pub fn play_game() {
     let mut game = Game::new();
     println!("Welcome to Tic Tac Toe! (Player 1 is X, Player 2 is O)");
     println!("Please enter a number from 1 to 9 to make a move.");
@@ -35,19 +35,24 @@ pub fn play_game() -> Winner {
                 // make the move in the game
                 // only handle when there is an error, otherwise
                 // we can continue to the next turn
-                game.take_turn(input).unwrap_or_else(|err| {
-                    match err {
-                        MoveError::IndexTakenError => {
-                            let available_spaces = game.get_available_spaces().iter().map(|i| (i + 1).to_string()).collect::<Vec<String>>();
-                            println!("That space is already taken.");
-                            println!("Please try again choosing any of these spaces: {}", available_spaces.join(", "))
-                        }
-                        MoveError::OutOfBoundsError => {
-                            println!("{} is not in the range 1-9. Please try again.", input + 1);
-                        }
-                        MoveError::GameEndedError => {
-                            println!("The game has ended. Please start a new game.");
-                        }
+                game.take_turn(input).unwrap_or_else(|err| match err {
+                    MoveError::IndexTakenError => {
+                        let available_spaces = game
+                            .get_available_spaces()
+                            .iter()
+                            .map(|i| (i + 1).to_string())
+                            .collect::<Vec<String>>();
+                        println!("That space is already taken.");
+                        println!(
+                            "Please try again choosing any of these spaces: {}",
+                            available_spaces.join(", ")
+                        )
+                    }
+                    MoveError::OutOfBoundsError => {
+                        println!("{} is not in the range 1-9. Please try again.", input + 1);
+                    }
+                    MoveError::GameEndedError => {
+                        println!("The game has ended. Please start a new game.");
                     }
                 });
             }
@@ -63,5 +68,21 @@ pub fn play_game() -> Winner {
 
     // we know for sure the game has ended and we have a winner,
     // so we can unwrap the winner safely and return it
-    game.get_winner().unwrap()
+    let winner = game.get_winner().unwrap();
+    println!("");
+    // TODO: refactor these nested match statements
+
+    match winner {
+        Winner::Tie => {
+            println!("It's a tie!");
+        }
+        Winner::Player(player) => match player {
+            Player::Player1 => {
+                println!("Player 1 wins!");
+            }
+            Player::Player2 => {
+                println!("Player 2 wins!");
+            }
+        },
+    }
 }
