@@ -8,26 +8,6 @@ fn parse_input(input: &String) -> Result<usize, Box<dyn Error>> {
     let input = input.parse::<usize>()?;
     Ok(input - 1)
 }
-
-fn take_turn(game: &mut Game, input: usize) {
-    // make the move in the game
-    // only handle when there is an error, otherwise
-    // we can continue to the next turn
-    game.take_turn(input).unwrap_or_else(|err| {
-        match err {
-            MoveError::IndexTakenError => {
-                println!("That space is already taken. Please try again.");
-            }
-            MoveError::OutOfBoundsError => {
-                println!("{} is not in the range 1-9. Please try again.", input + 1);
-            }
-            MoveError::GameEndedError => {
-                println!("The game has ended. Please start a new game.");
-            }
-        }
-    });
-}
-
 pub fn play_game() -> Winner {
     let mut game = Game::new();
     println!("Welcome to Tic Tac Toe! (Player 1 is X, Player 2 is O)");
@@ -44,7 +24,22 @@ pub fn play_game() -> Winner {
         let input = parse_input(&raw_input);
         match input {
             Ok(input) => {
-                take_turn(&mut game, input)
+                // make the move in the game
+                // only handle when there is an error, otherwise
+                // we can continue to the next turn
+                game.take_turn(input).unwrap_or_else(|err| {
+                    match err {
+                        MoveError::IndexTakenError => {
+                            println!("That space is already taken. Please try again.");
+                        }
+                        MoveError::OutOfBoundsError => {
+                            println!("{} is not in the range 1-9. Please try again.", input + 1);
+                        }
+                        MoveError::GameEndedError => {
+                            println!("The game has ended. Please start a new game.");
+                        }
+                    }
+                });
             }
             Err(_) => {
                 println!("{} is not a valid input. Please try again.", raw_input.trim());

@@ -22,7 +22,8 @@ pub struct Game {
     board: [Option<Player>; 9],
 }
 
-static WINNING_COMBOS: [[i32;3 ]; 8]  = [
+static COLUMN_COUNT: usize = 3;
+static WINNING_COMBOS: [[usize;3 ]; 8]  = [
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -49,7 +50,7 @@ impl Game {
                 Some(Player::Player2) => board_string.push_str("O"),
                 None => board_string.push_str(" "),
             }
-            if i % 3 == 2 {
+            if i % COLUMN_COUNT == 2 {
                 board_string.push_str("\n");
             } else {
                 board_string.push_str("|");
@@ -76,7 +77,7 @@ impl Game {
             let mut player1_count = 0;
             let mut player2_count = 0;
             for index in combo {
-                match self.board[index as usize] {
+                match self.board[index] {
                     Some(Player::Player1) => player1_count += 1,
                     Some(Player::Player2) => player2_count += 1,
                     None => (),
