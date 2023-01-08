@@ -139,30 +139,33 @@ impl Game {
 
     pub fn get_winner(&self) -> Option<Winner> {
         // check if any of the players have any of the winning combos
-        for combo in WINNING_COMBOS {
-            let mut player1_count = 0;
-            let mut player2_count = 0;
-            for index in combo {
-                match self.board[index] {
-                    Some(Player::Player1) => player1_count += 1,
-                    Some(Player::Player2) => player2_count += 1,
-                    None => (),
+        let winning_combo = self.get_winning_combo();
+        match winning_combo {
+            Some(combo) => {
+                let mut player1_count = 0;
+                let mut player2_count = 0;
+                for index in combo {
+                    match self.board[index] {
+                        Some(Player::Player1) => player1_count += 1,
+                        Some(Player::Player2) => player2_count += 1,
+                        None => (),
+                    }
+                }
+                 // check if the current combo has been matched (3 in a row)
+                if player1_count == combo.len() {
+                    return Some(Winner::Player(Player::Player1));
+                }
+                if player2_count == combo.len() {
+                    return Some(Winner::Player(Player::Player2));
                 }
             }
-            // check if the current combo has been matched (3 in a row)
-            if player1_count == combo.len() {
-                return Some(Winner::Player(Player::Player1));
-            }
-            if player2_count == combo.len() {
-                return Some(Winner::Player(Player::Player2));
-            }
+            None => (),
         }
 
-        // check if there are no more moves
         if self.no_more_moves() {
             return Some(Winner::Tie);
         }
-
+        
         None
     }
 
