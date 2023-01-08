@@ -65,7 +65,7 @@ impl Game {
                         board_strings.push("O".blue())
                     }
                 }
-                None => board_strings.push(i.to_string().truecolor(211, 211, 211)),
+                None => board_strings.push((i + 1).to_string().truecolor(211, 211, 211)),
             }
             if i % COLUMN_COUNT == 2 {
                 board_strings.push("\n".clear());

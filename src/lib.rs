@@ -52,7 +52,7 @@ pub fn play_game() -> Winner {
                 });
             }
             Err(_) => {
-                println!("{} is not a number between 1 and 9. Please try again.", raw_input.trim());
+                println!("{} is not a number. Please try again.", raw_input.trim());
             }
         }
     }
