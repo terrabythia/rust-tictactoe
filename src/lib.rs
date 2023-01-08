@@ -35,6 +35,8 @@ pub fn run() -> Winner {
     while !game.has_ended() {
         println!("");
         println!("{}", game.board_to_string());
+        println!("");
+        println!("{:?}'s turn.", game.get_turn());
         let mut raw_input = String::new();
         // ignore any error from stdin.read_line
         // because we will handle errors by checking the input string

@@ -1,16 +1,17 @@
+#[derive(Debug, PartialEq)]
 pub enum MoveError {
     GameEndedError,
     OutOfBoundsError,
     IndexTakenError,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Player {
     Player1,
     Player2,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Winner {
     Player(Player),
     Tie,
@@ -61,12 +62,12 @@ impl Game {
         self.turn
     }
 
-    pub fn no_more_moves(&self) -> bool {
-        self.board.iter().filter(|x| x.is_some()).count() == 9
-    }
-
     pub fn has_ended(&self) -> bool {
         self.get_winner().is_some() || self.no_more_moves()
+    }
+
+    pub fn no_more_moves(&self) -> bool {
+        self.board.iter().filter(|x| x.is_some()).count() == 9
     }
 
     pub fn get_winner(&self) -> Option<Winner> {
@@ -96,7 +97,7 @@ impl Game {
         if self.has_ended() {
             return Err(MoveError::GameEndedError);
         }
-        if index > 8 {
+        if index > self.board.len() - 1 {
             return Err(MoveError::OutOfBoundsError);
         }
         if self.board[index].is_some() {
@@ -112,4 +113,26 @@ impl Game {
 
 }
 
-// TODO: add tests
+#[cfg(test)]
+mod tests {
+    use crate::game::{Game, MoveError, Winner, Player};
+
+    #[test]
+    fn test_game() {
+        let mut game = Game::new(); 
+        assert_eq!(game.has_ended(), false);
+        assert_eq!(game.get_winner(), None);
+
+        assert!(game.take_turn(0).is_ok());
+        assert_eq!(game.take_turn(0).unwrap_err(), MoveError::IndexTakenError);
+        assert_eq!(game.take_turn(10).unwrap_err(), MoveError::OutOfBoundsError);
+        let turns = [1, 2, 3, 4, 5, 6];
+        for turn in turns.iter() {
+            assert!(game.take_turn(*turn).is_ok());
+        }
+        
+        // player 1 has won at this time
+        assert_eq!(game.take_turn(7).unwrap_err(), MoveError::GameEndedError);
+        assert_eq!(game.get_winner().unwrap(), Winner::Player(Player::Player1));
+    }
+}
