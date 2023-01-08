@@ -1,4 +1,5 @@
 use crate::game::{Game, MoveError, Player, Winner};
+use colored::Colorize;
 use std::{error::Error, io};
 
 pub mod game;
@@ -10,14 +11,18 @@ fn parse_input(input: &String) -> Result<usize, Box<dyn Error>> {
 }
 
 fn print_board(game: &Game) {
-    for char in game.board_to_colored_strings() {
-        print!("{}", char);
+    for string in game.board_to_colored_strings() {
+        print!("{}", string);
     }
 }
 
 pub fn play_game() {
     let mut game = Game::new();
-    println!("Welcome to Tic Tac Toe! (Player 1 is X, Player 2 is O)");
+    println!(
+        "Welcome to Tic Tac Toe! (Player 1 is {}, Player 2 is {}).",
+        "X".red(),
+        "O".blue()
+    );
     println!("Please enter a number from 1 to 9 to make a move.");
 
     while !game.has_ended() {
