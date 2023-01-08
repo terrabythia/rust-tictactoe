@@ -90,6 +90,12 @@ impl Game {
                 return Some(Winner::Player(Player::Player2));
             }
         }
+
+        // check if there are no more moves
+        if self.no_more_moves() {
+            return Some(Winner::Tie);
+        }
+
         None
     }
 
@@ -130,9 +136,19 @@ mod tests {
         for turn in turns.iter() {
             assert!(game.take_turn(*turn).is_ok());
         }
-        
+
         // player 1 has won at this time
         assert_eq!(game.take_turn(7).unwrap_err(), MoveError::GameEndedError);
         assert_eq!(game.get_winner().unwrap(), Winner::Player(Player::Player1));
+    }
+
+    #[test]
+    fn test_tied_game() {
+        let mut game = Game::new();
+        let turns = [0, 3, 1, 2, 4, 7, 5, 8, 6];
+        for turn in turns.iter() {
+            assert!(game.take_turn(*turn).is_ok());
+        }
+        assert_eq!(game.get_winner().unwrap(), Winner::Tie);
     }
 }

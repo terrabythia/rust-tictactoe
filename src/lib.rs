@@ -28,7 +28,7 @@ fn take_turn(game: &mut Game, input: usize) {
     });
 }
 
-pub fn run() -> Winner {
+pub fn play_game() -> Winner {
     let mut game = Game::new();
     println!("Welcome to Tic Tac Toe! (Player 1 is X, Player 2 is O)");
     println!("Please enter a number 1-9 to make a move.");
@@ -57,6 +57,6 @@ pub fn run() -> Winner {
     println!("{}", game.board_to_string());
 
     // we know for sure the game has ended and we have a winner,
-    // so we can unwrap the winner safely
+    // so we can unwrap the winner safely and return it
     game.get_winner().unwrap()
 }

@@ -1,7 +1,7 @@
-use tictactoe::{run, game::Winner, game::Player};
+use tictactoe::{play_game, game::Winner, game::Player};
 
 fn main() {
-    let winner = run();
+    let winner = play_game();
     println!("");
     // TODO: refactor these nested match statements 
     match winner {
