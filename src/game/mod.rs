@@ -1,3 +1,5 @@
+use colored::{Colorize, ColoredString};
+
 #[derive(Debug, PartialEq)]
 pub enum MoveError {
     GameEndedError,
@@ -42,6 +44,38 @@ impl Game {
         }
     }
 
+    pub fn board_to_colored_strings(&self) -> Vec<ColoredString>  {
+        let mut board_strings = Vec::new();
+        let winning_combo = self.get_winning_combo();
+        for (i, cell) in self.board.iter().enumerate() {
+            match cell {
+                Some(Player::Player1) => {
+                    if winning_combo.is_some() && winning_combo.unwrap().contains(&i) {
+                        board_strings.push("X".red().on_white())
+                    }
+                    else {
+                        board_strings.push("X".red())
+                    }
+                }
+                Some(Player::Player2) => {
+                    if winning_combo.is_some() && winning_combo.unwrap().contains(&i) {
+                        board_strings.push("O".blue().on_white())
+                    }
+                    else {
+                        board_strings.push("O".blue())
+                    }
+                }
+                None => board_strings.push(i.to_string().truecolor(211, 211, 211)),
+            }
+            if i % COLUMN_COUNT == 2 {
+                board_strings.push("\n".clear());
+            } else {
+                board_strings.push("|".clear());
+            }
+        }
+        board_strings
+    }
+
     pub fn board_to_string(&self) -> String {
         let mut board_string = String::new();
         for (i, cell) in self.board.iter().enumerate() {
@@ -59,6 +93,16 @@ impl Game {
         board_string
     }
 
+    pub fn get_available_spaces(&self) -> Vec<usize> {
+        let mut open_spaces = Vec::new();
+        for (i, cell) in self.board.iter().enumerate() {
+            if cell.is_none() {
+                open_spaces.push(i);
+            }
+        }
+        open_spaces
+    }
+
     pub fn get_turn(&self) -> Player {
         self.turn
     }
@@ -69,6 +113,28 @@ impl Game {
 
     pub fn no_more_moves(&self) -> bool {
         self.board.iter().filter(|x| x.is_some()).count() == 9
+    }
+
+    pub fn get_winning_combo(&self) -> Option<[usize; 3]> {
+        for combo in WINNING_COMBOS {
+            let mut player1_count = 0;
+            let mut player2_count = 0;
+            for index in combo {
+                match self.board[index] {
+                    Some(Player::Player1) => player1_count += 1,
+                    Some(Player::Player2) => player2_count += 1,
+                    None => (),
+                }
+            }
+            // check if the current combo has been matched (3 in a row)
+            if player1_count == combo.len() {
+                return Some(combo);
+            }
+            if player2_count == combo.len() {
+                return Some(combo);
+            }
+        }
+        None
     }
 
     pub fn get_winner(&self) -> Option<Winner> {

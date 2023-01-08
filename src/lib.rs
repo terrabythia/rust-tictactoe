@@ -8,13 +8,21 @@ fn parse_input(input: &String) -> Result<usize, Box<dyn Error>> {
     let input = input.parse::<usize>()?;
     Ok(input - 1)
 }
+
+fn print_board(game: &Game) {
+    for char in game.board_to_colored_strings() {
+        print!("{}", char);
+    }
+}
+
 pub fn play_game() -> Winner {
     let mut game = Game::new();
     println!("Welcome to Tic Tac Toe! (Player 1 is X, Player 2 is O)");
-    println!("Please enter a number 1-9 to make a move.");
+    println!("Please enter a number from 1 to 9 to make a move.");
+
     while !game.has_ended() {
         println!("");
-        println!("{}", game.board_to_string());
+        print_board(&game);
         println!("");
         println!("{:?}'s turn.", game.get_turn());
         let mut raw_input = String::new();
@@ -30,7 +38,9 @@ pub fn play_game() -> Winner {
                 game.take_turn(input).unwrap_or_else(|err| {
                     match err {
                         MoveError::IndexTakenError => {
-                            println!("That space is already taken. Please try again.");
+                            let available_spaces = game.get_available_spaces().iter().map(|i| (i + 1).to_string()).collect::<Vec<String>>();
+                            println!("That space is already taken.");
+                            println!("Please try again choosing any of these spaces: {}", available_spaces.join(", "))
                         }
                         MoveError::OutOfBoundsError => {
                             println!("{} is not in the range 1-9. Please try again.", input + 1);
@@ -42,14 +52,14 @@ pub fn play_game() -> Winner {
                 });
             }
             Err(_) => {
-                println!("{} is not a valid input. Please try again.", raw_input.trim());
+                println!("{} is not a number between 1 and 9. Please try again.", raw_input.trim());
             }
         }
     }
 
     // game has ended
     println!("");
-    println!("{}", game.board_to_string());
+    print_board(&game);
 
     // we know for sure the game has ended and we have a winner,
     // so we can unwrap the winner safely and return it
